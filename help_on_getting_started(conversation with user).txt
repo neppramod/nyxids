@@ -1,0 +1,358 @@
+I previsously had conversation with a user on how to get started with Nyx. 
+
+<User>
+It is very useful for a only desktop user like me who likes to know a little bit more
+
+If only you had a little time to explain how to implement Nyx in Windows it would be well appreciated.
+
+For your information my system is as follows
+
+Windows Vista Home Premium over a HP9000
+
+I have IIS implemented as I program  and maintain a little intranet for myself at home to use it in my job
+
+I also have wincap installed as I downloaded snort and I have Snort working in my windows vista
+
+But your idea and approach is the one I have thinking due this kind or work normally for Linux and not
+
+For windows.
+
+I also have Norton Installed and I think that Norton is substituting the Windows firewall for there own one
+
+But not sure (I do not have that knowledge yet). But Snort is working very well but I only see packets in console mode
+
+As I could not get it in Kiwi as I have I Wireless router with an IP of 192.168.1.21  and 192.168.1.1 a router ip
+
+The iformation I suppose I need is:
+
+a)       I install the apache server
+
+(can it coexist with IIS in the same computer? And how)
+
+ 
+
+b)      Do I need to install  jade 3.5?  Where?
+
+ 
+
+If have wincap do I need to install libnet-0.10.11.tar.gz and where?
+
+ 
+
+c)       Do I need to install ?
+
+d)  Web based User Interface : jsf-api.jar (1.2)
+
+e)                             jsf-impl.jar
+
+f)                             jstl-1.2.jar
+
+and where
+
+ 
+
+where do I drop the folders:NyxAdmin and NyX_final to work with Apache? Or have I to take the subfolders out of Nyx¡dmin and install then
+
+separately inside apache
+
+As you can see a lot of questions for a newbie but interested in your idea from an intellectual and practical point of view.
+    
+
+
+<Me>
+
+Now our
+computers are already changed from those settings that we had then.
+But i will try my best to help you get it going and understand.
+
+NyxAdmin and NyX_final are two independent projects and yet part of
+same project. For some reasons(hard disk crash) i could not upload the
+web files of NyxAdmin. NyxAdmin is a netbean project. I will upload it
+whenever i will get them from my other partner. NyxAdmin reads a text
+file written at a common location by Nyx_final(parsed log file) and
+shows the output on webpage. It also downloads all the rules files
+from snort.org cvs on to a directory where Nyx_final can read. If you
+are more concerned to run the Nyx main capturing project you need to
+download some rules files from snort.org. You should run all the
+commands from inside NyX_final directory.  First see the file inside
+nyxmain directory named MainGui.java. This is the program that need to
+be run after the capture and jade has been started. Since it is the
+main program you should start reading the program starting from main.
+
+But this is dependent code:
+
+AppendFile appendFile=new AppendFile();
+appendFile.append("/home/pramod/Desktop/nyx.log",text);
+
+here text(parsed log. Detection) is written to a file nyx.log file
+inside my Desktop. You may create a file called nyx.log inside say c:
+so the appendFile.append becomes
+
+appendFile.append("c:\\nyx.log",text);
+
+Stop norton until you get it working. Apache and IIS can co-exist but
+stop one while other runs or run each on separate port (both may use
+8080 port).
+
+http://sourceforge.net/project/showfiles.php?group_id=4223&package_id=4237&release_id=140988.
+
+
+Load shedding here. I will get you later. This time you only need jade
+and winpcap and libnet. You don't need other
+
+<User>
+Thanks for your replay so fast.
+a) I downloaded libnet and have the folder in my desktop but where do I put
+this folder?
+b) I downloaded Jade 3.6 and jade 3.5 but they are only 4 zip
+files(jade-bin,jade-docs,jade-src and jade-examples and a Meta-inf but do
+not know where to put then in my computer.
+
+Note.-¥I also downloaded a binary installation of Jade but only for version
+1.2 they do not have a binary installation for
+Windows and what I could see in the binary installation is different that
+what it is inside the zips.
+So the real problem, before any possible start is : Are they going to make a
+binary installation of jade 3.6 or it is not
+Necessary now? And then, if it is not necessary, where do I put the
+decompressed files in the 4 zip files? Any directory is
+Valid or shell I install then inside the JRE runtime folder or in the apache
+folder or ...?
+
+<Me>
+This is our final year project. We did it some 1 years ago. However i
+will print you the discussion we had in the earlier days. you will not
+need jade 3.6 for this. jade 3.5 will be fine. You even don't need
+other than jade-bin. Other contain important doc file, and great
+examples. I will print one of our earlier discussions which we had.
+Once i started the jade part later it was handled by one of my
+friends. I started to look the jsf part. I have informed him to mail
+me the setup process. I lost some files during my hard disk failure.
+However i will help you. As i mentioned in my earlier mail you can
+reference the classpath by -classpath or -cp option in java. you have
+to include some jars from inside the jade bin.
+
+This was my initial part. It must get you started.
+
+As soon as i get those steps i will mail you reagarding how to run our
+project. See the jar files inside the bin. I forgot which jar file had
+those. So do one thing. Copy jar inside the jade bin to some other
+directory and rename them to zip extension and browse through them to
+find the following imports and include them while compiling( search
+jade\core\Agent.class, AID.class, behaviours(directory) and lang\acl)
+
+To compile e.g you can use this command.
+
+javac Sender.java Receiver.java
+
+but before that open the properties of my computer and add CLASSPATH
+environment variable(may be local) and add required jar inside the
+bin). See example and doc of jade you downloaded).
+
+while running you may even refer each jar using this command
+java -classpath .;required-bin.jar;another.jar MyFile
+
+
+Following is the first code i did from example :
+
+Sender.java
+
+// Sender.java
+// Edited by razornYx
+
+import jade.core.Agent;
+import jade.core.AID;
+import jade.core.behaviours.*;
+import jade.lang.acl.*;
+
+public class Sender extends Agent {
+   protected void setup() {
+
+       // Setup answering behavior
+       addBehaviour(new CyclicBehaviour(this) {
+           public void action() {
+               ACLMessage msg = receive();
+               if (msg != null)
+                   System.out.println("Message: " + msg.getContent()
+                           + " ( " + msg.getSender().getName()+ " )");
+               block();
+           }
+       });
+
+       // Send message to agent "a1"
+
+       ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+       msg.setContent(" Hi from Sender ");
+
+       msg.addReceiver(new AID("a1", AID.ISLOCALNAME));
+       send(msg);
+
+   }
+}
+Receiver.java
+
+// Receiver.java
+// Edited by razornYx
+
+import jade.core.Agent;
+import jade.core.behaviours.*;
+import jade.lang.acl.*;
+
+public class Receiver extends Agent {
+   protected void setup() {
+       // create behaviour for receive and send message to Sender
+       addBehaviour(new CyclicBehaviour(this) {
+           public void action() {
+
+               ACLMessage msg = receive(); // receive sent message
+               if (msg != null) {
+                   System.out.println(" Message to " + myAgent.getLocalName()
+                           + " received. Message is : " + msg.getContent());
+
+                   // Now create a reply back to the Sender agent
+                   ACLMessage reply = msg.createReply();
+                   reply.setPerformative(ACLMessage.INFORM);
+                   reply.setContent(" Hello reply from Receiver");
+                   send(reply);
+               }
+               block();
+           }
+       });
+   }
+}
+
+README
+
+// README
+------------
+By razornYx
+
+Step1 (compiling in separate terminals):
+   javac Receiver.java
+   javac Sender.java
+Step2: (Executing in separate terminals): here a1 can be changed in
+the Sender.java
+   java jade.Boot a1:Receiver
+   java jade.Boot -container main:Sender
+Step3:
+   See by changing the placement of receiving and sending codes to
+track how the message is sent and received.
+Step4:
+   JADE communication completed now move on to next part
+
+
+Now when the above two files Receiver.java and Sender.java are ready
+just open a terminal and compile it as Step1 for Receiver.java. Now
+open another terminal and compile Sender.java as Step1. Now using
+respective terminals as opened before execute Step2 in their
+respective terminals. Change the order how the message is received and
+sent in source codes and execute to see the change. There can be
+various variations to source code as using DF (Yellow Page Service).
+After this step now the sniffing and using JADE to pass messages to
+take respective action to received message is the next part.
+
+<User>
+I have LibnetNET installed in my computer so I consider point a) as
+installed
+Point b) is the one to consider now.
+
+<User>
+I took the jade-bin and installed in the c: as
+Jade
+Here I have the following files inside the lib folder:
+http
+iiop
+jade
+jadeTools
+
+I also put the lines in the classpath for jade
+
+The next step
+ javac Sender.java Receiver.java and the conversion to zip is hard for me to
+understand.
+I renamed to zip and unzip http and find the following:
+Folder mtp and inside folder http and inside:10 class files among which this
+one:httpserver.class
+I will decompress all and see if I find what you told me about
+    
+<Me>
+
+The book that is shown on jade site is very good. you should read that
+before you know all these things. At least some chapters. The easier
+way to find out the files inside the jar file is if you can run jar
+and java command from command prompt.
+
+jar -tvf jade.jar
+
+Ok i did it for you.
+
+1. Create a directory where you put two source files from above. i.e
+Sender.java and Receiver.jar.
+
+2. Copy specified code from above and paste in respective files. I.e
+Sender.java section from above to Sender.java and so on.
+
+3. You told you have put the jar files in the CLASSPATH environment
+variable. For this code to run you only need "jade.jar"
+
+If this file is not in the classpath you cannot even compile the
+files. For this project i download
+http://jade.tilab.com/dl.php?file=JADE-bin-3.5.zip. If you are using
+some ide like eclipse, don't use for this project to compile. How to
+know if the CLASSPATH contain jade.jar.
+
+The java files imports classes from that jar file so while compiling
+no error should come. After you comile using these two commands
+
+javac Receiver.java
+javac Sender.java
+
+Now run the files. First you should start Receiver. Note that we are
+first booting the jade and then starting receiver on that context.
+
+java jade.Boot a1:Receiver
+
+The last line of this start message should read like this
+
+INFO: --------------------------------------
+Agent container Main-Container@Ibex is ready.
+--------------------------------------------
+
+Now open another command prompt(i again assume classpath is set as
+global variable for all). Run this command so that sender sends the
+message for the receiver to listen
+
+java jade.Boot -container main:Sender
+
+At the instant we do this see the Receiver command prompt window. The
+sender's message  "Hi from Sender" should come to the receiver side as
+
+ Message to a1 received. Message is :  Hi from Sender
+
+that says Message to agent a1 received. And the message is "Hi from Sender"
+
+Similarly not required though we even sent message from receiver to
+the sender which should come in the sender window as
+
+Message:  Hello reply from Receiver ( a1@Ibex:1099/JADE )
+
+Which should come from this line of code
+
+reply.setContent(" Hello reply from Receiver");
+
+This should get you started. As for our project some files are
+missing. I will upload it within some days when i get them. So wait
+for them. And if you are on to agent based software development please
+read the book listed on the jade site. It's the best resource any one
+can get.
+
+<Me>
+
+If you are on to serious development with jade. Read the chapter where
+you can pass object through jade, or search online. While i started
+some 1 and half year ago i bothered the developers very much. There
+were many errors on some version then. Hope they have resolved them
+now. I again insist you to find out passing object.
+
+<Me>
+This was our earlier release where Parser.java is the file that does all the parsing of snort rule files. Test.java contains one line from on of the rule files. Check this and get an overview what our program does 
