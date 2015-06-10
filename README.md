@@ -3,8 +3,6 @@
 Description:- Intrusion Detection System made using Java based on Snort Technology and Snort rules files (downloded from snort site using web based gui)
 For more detailed description read the Documentation 
 
-For more help :- neppramod@gmail.com
-
 Used Plugins and Packages
 Web Server: -> apache-tomcat-6.0.14.zip
 Agent Technology:    -> jade 3.5
