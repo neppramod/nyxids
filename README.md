@@ -1,7 +1,7 @@
 (Nyx)Intrusion Detection System
 
 Description:- Intrusion Detection System made using Java based on Snort Technology and Snort rules files (downloded from snort site using web based gui)
-For more detailed description read the Documentation 
+For more detailed description read the Documentation and if you want to expand on the project (I don't have any other code other than that hosted here). If you want to work on JADE agent communication tutorial, I have written it at https://wordpress.com/post/neppramod.wordpress.com/141
 
 Used Plugins and Packages
 Web Server: -> apache-tomcat-6.0.14.zip
